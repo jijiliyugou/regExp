@@ -1,0 +1,167 @@
+// 正则对象 是对其他字符串做过滤逻辑操作的
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- 
+        1、lodash（集合、对象、数组）
+        2、es6（map，forof，filter，sort，replace，解构）
+        3、jsdoc
+        4、mongodb（增删改查）
+        5、vue cli全局安装
+        6、wyb库函数
+        7、bluebird.map,all函数，async/await深入理解，控制流程，forof行，foreach不行，forin？
+        8、经常在控制台研究代码
+        9、每个类目作为1个文档，通过父id关联，叶子类目有全路径 
+    -->
+    <script>
+        // console.log(/男|女/.test("你是男孩子吗？")); true
+        // . 点是除了换行和回车之外的任意字符 \n换行 \r回车 新式系统为\r\n 回车
+        // \b 匹配单词的边界 不包含空格
+        // \d [0-9]是代表0—9的数字字符
+        // \D [^0-9]是非数字字符
+        // \s [\f\r\n\t\v] 不可见字符
+        // \S [^\f\r\n\t\v] 可见字符
+        // \w [a-zA-Z0-9] 所有的单词字符(所有的字母数字和_)
+        // \W [^a-zA-Z0-9] 非单词字符
+        // i 忽略大小写
+        // g 全局匹配 global
+        // gi 全局匹配+忽略大小写
+
+        // 或和优先级 或=｜ 优先级=()
+        // /y(i|t)eng/.test("yiteng") // false 意思是要么yieng 要么yteng
+
+        // 简单类 只代表一个字符串 []
+        // [abc] 代表可以是a｜b｜c 都可以
+        // console.log(/w[abc]h/.test("wbh")); // true  要么是wah 要么是wbh 要么是wch
+
+        // 或者和简单类的区别
+        // /y(aa|bb|cc)z/.test('yaaz') true {yaaz | ybbz | yccz}只有三种组合
+        // /y[abc][abc]z/.test('yabz')  简单累就会有很多种组合了
+        // [^] 负向类  除了中扣号之外的  /[^abc]/.test('a') false
+        // 范围类 /[0-9]/.test("abc9") true  /[0-9a-zA-Z]/.test("qwe") true  所有数字大小写字母
+
+        // 组合类
+        // /[a-m\n]/.test("a\n") true
+        // /[^0-5][^a-c]/.test("6") false  最少有两个字符
+        // /[^0-5][^a-c]/.test("6q7y") true 
+        // /[0-5]|[a-c]/.test("a") true
+        // /^\d/.test("0123abc") true  以数字开头
+        // /b$/.test("0123abc") false  以b结尾
+        // console.log(/^2b/.test("2b"));  false  以2b开头
+        // console.log(/^b.+c/.test('b1234634c')); true  以b开头中间有一个或以上字符和c
+
+        // 量词
+        // + 一次或以上  * 0次或以上   ？重复0次或一次0|1  {2}两个 {2,5}意思是出现2-5次 {0,}0到多次  {1,}一次或多次  {0,1}0次或一次
+
+
+        // /^abc$/.test("abc")  严格匹配  有且只有一次
+        // /^\d{2}$/.test("22") true {}表示量词,{2}代表2个  总结为要有两个数字并且以数字结尾
+
+        // /^colo*r$/.test("colr") true  *代表0次或多次 所有o可以有多次 也可以没有
+        // /^(color)*$/.test(""); true  括号扩起来代表被扩起来的color可以有0次或以上colorcolor....
+
+        // var str = "abcd字"  // 每一个汉字都有自己的unicode编码  使用escape("字")就可以查看汉子的unicode编码  使用unescape("编码")就可以把编码转回数字
+        // 所有的汉字都在一个范围中 [\u4e00-\u9fa5]
+        // console.log(/[\u4e00-\u9fa5]/.test(str)); true
+
+        // 表单验证姓名
+        // /^[\u4e00-\u9fa5]{2,4}$/.test("哈哈") 验证中文数量为2-4个
+
+        // replace 使用正则
+        // 1、var str = '你100我200他300'
+        // console.log(str.replace(/\d+/g,'呵呵'));
+
+        // 2、所有的逗号替换成句号abc,efg,123,abc,123,a
+        // var str = 'abc,efg,123,abc,123,a';
+        // console.log(str.replace(/\W/g,'。'));
+
+        // 3、修改成绩，全改成100分
+        // var jsonStr = '[{"name":"张三",score:80},{"name":"张三",score:90},{"name":"张三",score:81}]';
+        // console.log(jsonStr.replace(/\d+/g,'100'));
+
+        // 4、去掉字符串的前后空格，封装成函数
+        // var str = '  冠隆  ';
+        // function costEmpty(str) {
+        //     return str.replace(/^\s+|\s+$/g,'')
+        // }
+        // console.log("=="+costEmpty(str)+"==");
+
+        /**
+         * string的match提取方法的使用
+         */
+
+        // 1、提取所有的数字
+        // var str = "张三：1000，李四：5000，王五：8000。";
+        // console.log(str.match(/\d+/g));
+
+        // 2 提取email地址
+        var str = "123123@xx.com,fangfang@valuedopinions.cn 286669312@qq.com 2、emailenglish@emailenglish.englishtown.com楼主是好人 286669312@qq.com...冠隆当初求种像条狗";
+        console.log(str.match(/\w+@\w+(\.\w+)+/g));
+
+        /**
+         * 分组提取
+         */
+
+        // 1、提取email中的每一部分
+        var str = "123123@xx.com.cn  penglin@qq.com.cn";
+        var reg = /(\w+)@(\w+)\.(\w+)(\.\w+)?/;
+        var arr = str.match(reg)
+        console.log(arr);
+
+        // ()括号就是分组,使用$1就可以获取分组里的内容
+        console.log(RegExp.$1);
+        console.log(RegExp.$2);
+        console.log(RegExp.$3);
+        console.log(RegExp.$4);
+
+        // 2、分组练习一
+        var str = "5=a, 6=b, 7=c";
+        str.replace(/(\d)=(\w)/g, "$2===$1")
+
+        // 3、 分组练习二
+        var str = "1221你好2921我好2121它好8998他好2112"; // 需求 提取所有数字并分组
+        str.match(/(\d+)(\d+)\2\1/g)
+        //  \1 代表 第一个 ( ) 里面部分 匹配的 字符串
+        //  \2 代表 第二个 ( ) 里面的。。
+
+        // 字符串的search方法检索
+        var str = '冠隆100波波200谦儿300';
+        str.search(/\d/)
+
+        // 字符串lastIndexOf 的使用
+        var str = 'abcdebfg';
+        var res = str.lastIndexOf('b');
+        console.log(res);//5
+
+        //字符串分割方法 split使用正则
+        var str = "张三100李四200王五300波波";
+        // str.split(/\d+/g)
+        str.match(/\d+/g)
+        str.match(/[^\d]+/g)
+
+        /**
+         * 正则的所有方法
+         */
+        // 1、正则对象.test()
+        // /\d/.test("哈哈") 判断是否存在 返回boolean
+
+        // 2、正则对象.exec()
+        // 正则对象的exec这个方法,提取满足正则规则的第一个.
+        // 加g也不能提取所有, 如果要提取所有就使用字符串的match方法ß
+        // console.log(/\d+/.exec("哈哈哈111呵呵呵222嘿嘿333"));
+        // console.log(/\d+/.exec("呵呵呵呵")) 没有匹配到会返回null
+        // 如果要提取所有就要使用字符串的String.match()方法
+
+        // 字符串的   replace   search   match   split
+    </script>
+</body>
+
+</html>
