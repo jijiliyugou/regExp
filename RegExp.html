@@ -14,13 +14,43 @@
         1、lodash（集合、对象、数组）
         2、es6（map，forof，filter，sort，replace，解构）
         3、jsdoc
-        4、mongodb（增删改查）
+        4、mongodb（增删改查） 
         5、vue cli全局安装
         6、wyb库函数
         7、bluebird.map,all函数，async/await深入理解，控制流程，forof行，foreach不行，forin？
         8、经常在控制台研究代码
         9、每个类目作为1个文档，通过父id关联，叶子类目有全路径 
     -->
+    <!-- 
+        mongodb 条件查询
+        db.col.find({"name":"菜鸟教程"}).pretty() =======>  = 等于
+        db.col.find({"number":{$ne:50}}).pretty() ====>  != 不等于
+        db.col.find({"number":{$lt:50}}).pretty() ====>  < 小于
+        db.col.find({"number":{$lte:50}}).toArray() ==>  <= 小于或等于
+        db.col.find({"number":{$gt:50}}).toArray() ===>  > 大于
+        db.col.find({"number":{$gte:50}}).toArray() ==>  >= 大于或等于
+        
+
+        mongodb条件查询或和并且 
+
+        如在集合XX中寻找名字为BuleRiver或者BuleRiver2的信息：
+
+        db.XXX.find({"$or":[{"name":"BuleRiver1"}, {"name":"BuleRiver2"}]});  ===========> 或者        查找名字为BuleRiver1 || BuleRiver2的数据
+
+        如果是AND关系的话，直接用逗号隔开 或者写上$and
+
+        db.XXX.find({"name":"BuleRiver", "level":1});   ================================> 并且
+
+        db.XXX.find({$and:[{"state1":11},{"state2":22}]});  ============================> 并且
+
+        db.col.find({$or:    ===========================================================> 或者 并且 多条件查询语法
+          [
+            {$and:[{"state1":11},{"state2":22}]},{"value":{$gte:300}}
+          ]
+        }).pretty()
+
+        db.col.find({"number": {$gt:50}, $or: [{"by": "菜鸟教程"},{"title": "MongoDB 教程"}]}).toArray() ===> 或者 并且 多条件查询语法
+     -->
     <script>
         // console.log(/男|女/.test("你是男孩子吗？")); true
         // . 点是除了换行和回车之外的任意字符 \n换行 \r回车 新式系统为\r\n 回车
@@ -116,11 +146,21 @@
         var arr = str.match(reg)
         console.log(arr);
 
-        // ()括号就是分组,使用$1就可以获取分组里的内容
+        // ()括号就是分组,使用$1就可以获取分组里的内容 或者使用 arr[1] | arr[1] ... 获取分组
+        console.log(arr[1]);
+        console.log(arr[2]);
         console.log(RegExp.$1);
         console.log(RegExp.$2);
         console.log(RegExp.$3);
         console.log(RegExp.$4);
+
+        // ?: 又想优先级 又不想分组 可以使用(?:\w+) =>优先不分组
+        // ?= 正向肯定预查 (?=95|98|NT|2000) ”能匹配“Windows2000”中的“Windows”，但不能匹配“Windows3.1”中的“Windows” 不分组
+        // ?! 正向否定预查 Windows(?!95|98|NT|2000) ”能匹配“Windows3.1”中的“Windows”，但不能匹配“Windows2000”中的“Windows”，不能匹配到Windows95 中的windows
+        // ?< 反向肯定预查 (?<=95|98|NT|2000)Windows ”能匹配“2000Windows”中的“Windows”，但不能匹配“3.1Windows”中的“Windows”
+        // ?<! 反向否定预查 (?<!95|98|NT|2000)Windows”能匹配“3.1Windows”中的“Windows”，但不能匹配“2000Windows”中的“Windows”。这个地方不正确，有问题
+
+
 
         // 2、分组练习一
         var str = "5=a, 6=b, 7=c";
@@ -161,6 +201,149 @@
         // 如果要提取所有就要使用字符串的String.match()方法
 
         // 字符串的   replace   search   match   split
+
+
+       /**
+        *  wyb中的方法
+       */
+
+       /**创建并返回iframe，用完一定要调用ifr.remove()删除 */
+       wyb.createIframe(url = "", isShow = false, isMobile = false, tip = "请登录")
+
+       /**向元素输入一段文本*/
+       wyb.type(ele, str) 
+
+       /**等待直到元素出现，返回元素或null，默认10秒超时*/
+       wyb.waitEle(ifr, sel, timeout = 10)
+
+       /**等待直到全屏滚动完毕，注意：对于滚动刷新则循环用var*/
+       wyb.winScroll(ifr)
+
+       /**包装一个对象指定的函数，使其遇到指定的错误时重试几次, 会将指定函数异步*/
+       wyb.wrapOnErrReTry(obj, funName, num = 3)
+
+       /**等待几毫秒后执行*/
+       wyb.waitTimeMS(ms)
+
+       /**等待几秒后执行*/
+       wyb.waitTime(s)
+
+       /**只要函数条件不满足就一直等待，返回函数结果，默认10秒超时*/
+       wyb.waitFun(fun, timeout = 10)
+
+       /**等待指定请求并取消，返回requestBody*/
+       wyb.waitRequest(url, timeout = 3)
+
+       /**在默认浏览器中打开网址 */
+       wyb.openUrl(url)
+
+       /**在资源管理器中打开文件或文件夹*/
+       wyb.openFile(file)
+
+       /**序列化对象，可以序列化日期，正则，函数等 */
+       wyb.stringify(obj)
+
+        /**反序列化 */
+        wyb.parse(rawData)
+
+        /**将日期时间对象转成格式为"2019-01-20 12:20:01"的字符串，默认获取当前时间*/
+        wyb.getTime(date = undefined)
+
+        /**html实体编码 */
+        wyb.htmlEncode(s)
+
+        /**获取过滤掉html标记的纯文本 */
+        wyb.getInnerText(s)
+
+        /**md5加密 */
+        wyb.md5(text) 
+
+        /**获取所有正则匹配项的所有括号里的内容*/
+        wyb.getAllMatch(str, reg)
+
+        /**获取所有正则匹配项的第一个括号里的内容*/
+        wyb.getAllMatch2(str, reg)
+
+        /**获取第一个正则匹配项的第一个括号里的内容*/
+        wyb.getMatch(str, reg)
+
+        /**删除str中的所有白字符，并替换多个空格为一个空格*/
+        wyb.handleStr(str)
+
+        /**删除指定的html标记，如["a","iframe"]，要删除里面的内容 */
+        wyb.delHtmlMark(html, arr = ["a", "iframe", "frame", "script", "object", "style", "map", "area"])
+
+        /**删除所有外部网址，不含src，href等 */
+        wyb.delOuterUrl(html)
+
+        /**将字符串转成正则表达式 */
+        wyb.transReg(str)
+
+        /**转为数字*/
+        wyb.toNumber(s)
+
+        /**转为整数*/
+        wyb.toInteger(s)
+
+        /**转为布尔值*/
+        wyb.toBoolean(s) 
+
+        /**计算文本长度*/
+        wyb.textLength(str, isD2 = false)
+
+        /**从str左边开始取多少字符*/
+        wyb.extSubstr(str, num, isD2 = false)
+
+        /**读取文件 并转为 Blob 对象*/
+        wyb.readBlob(path)
+
+        /**将node的专有的2进制buffer流数组转为浏览器可识别的8进制arraybuffer数组*/
+        wyb.bufferToArrayBuffer(buffer)
+
+        /**浏览器可识别的8进制arraybuffer数组转为node专有的2进制buffer流数组*/
+        wyb.arrayBuffertoBuffer(ab)
+
+        /**axios请求 将json格式的data数据转为formData, form类型*/
+        wyb.transToFormorFormData(obj, type = "URLSearchParams")
+
+        /**将Json对象数据转为url编码字符串 如：categoryId=537070985&tags=22216&tags=22220&tags=27014&freight_template=*/
+        wyb.transObjTOUrlstr(obj)
+
+        /**将html的纯value(包含#x编码字符)进行解码*/
+        wyb.getNewHtmlValue(value)
+
+        /**将typ=html的属性的值中的src值替换为上传后图片url,并删除src2 然后返回处理后的整个值*/
+        wyb.getNewHtml(htmlstr, pics)
+
+        /**将typ=html的属性的值中的src的值替换为src2的值,并删除src2 然后返回处理后的整个值*/
+        wyb.getHtmlreplacePic(htmlstr, isUrlDecode = false, isUrlEnCode = false, isReplace = false)
+
+        /**将typ=html的属性的值去文本*/
+        wyb.getHtmlDelText(htmlstr)
+
+        /**返回错误对象*/
+        wyb.getErrObj(error)
+
+        /**计算2个字符串的相关度，完全相等为1，完全不等为0*/
+        wyb.getXgd(str1, str2, lang)
+
+        /**获取最相关的对应词及其相关度*/
+        wyb.getMap(obj, arr, mapLang)
+
+        /**异步删除文件夹 */
+        wyb.deleteDir(path, fpath = "")
+
+        /**同步复制文件夹 */
+        wyb.copyDir(src, dist)
+
+        /**oss图片加文字水印 返回新的url */
+        wyb.getWaterPicBuffer(pic, text, color = "#000000", size = 40, g = "se", voffset = 0, x = 10, y = 10, t = 100)
+
+        /**通过oss内部透明图 需要改变透明度的图片为水印图 来改变图片透明度*/
+        wyb.picOpacity(pic, t = 100)
+
+        /**根据约束处理图片 并通过阿里云API去图片背景  返回新的url */
+        wyb.picDelBackground(pic, attr = undefined)
     </script>
 </body>
 
